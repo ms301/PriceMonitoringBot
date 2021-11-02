@@ -1,3 +1,6 @@
 [submodule "TelegaPi"]
 	path = TelegaPi
 	url = https://github.com/ms301/TelegaPi.git
+[submodule "mORMot2"]
+	path = mORMot2
+	url = https://github.com/synopse/mORMot2.git
