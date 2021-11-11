@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{69AD998B-1BE1-4B4D-9C3B-1C5165359DB2}</ProjectGuid>
+        <ProjectGuid>{6B61F620-9070-4A98-AA77-B2C212CE0521}</ProjectGuid>
         <ProjectVersion>19.2</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <MainSource>Pooling.dpr</MainSource>
@@ -120,6 +120,7 @@
         <DCCReference Include="PMB.Tg.Pooling.pas"/>
         <DCCReference Include="PMB.Log.pas"/>
         <DCCReference Include="PMB.Tg.Routing.pas"/>
+        <DCCReference Include="Unit1.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

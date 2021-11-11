@@ -7,7 +7,9 @@ uses
   TelegramBotApi.Client,
   TelegramBotApi.Router,
   TelegramBotApi.Polling.Console,
-  TelegramBotApi.Types, PMB.Tg.Routing;
+  TelegramBotApi.Types,
+  PMB.Tg.Routing,
+  mormot.rest.sqlite3;
 
 type
   TDemoPooling = class
@@ -25,7 +27,7 @@ type
     procedure DoReadMessage(AMsg: TtgMessage);
   public
     procedure Main;
-    constructor Create;
+    constructor Create(ADb: TRestClientDB);
     destructor Destroy; override;
 
   end;
@@ -38,11 +40,16 @@ uses
   TelegramBotApi.Types.Enums,
   TelegramBotApi.Types.Request,
   TelegramBotApi.Types.Keyboards,
-  Winapi.Windows;
+  Winapi.Windows, CloudAPI.Exceptions;
 
-constructor TDemoPooling.Create;
+constructor TDemoPooling.Create(ADb: TRestClientDB);
 begin
   fBot := TTelegramBotApi.Create(BOT_TOKEN);
+
+  TcaExceptionManager.Current.OnAlert := procedure(AExcept: ECloudApiException)
+    begin
+      Log.Add.Log(TSynLogInfo.sllError, AExcept.ToString);
+    end;
   fPooling := TtgPollingConsole.Create;
   fPooling.Bot := fBot;
   FRouteUsersState := TtgRouteUserStateManagerRAM.Create;
@@ -52,7 +59,7 @@ begin
       Log.Add.Log(TSynLogInfo.sllInfo, 'RouteEnd: ' + AFrom.Name + ', RouteStart: ' + ATo.Name + ', UserID=' +
         AUserID.ToString);
     end;
-  FRouterBuilder := TRouterBuilder.Create(FRouter, fBot);
+  FRouterBuilder := TRouterBuilder.Create(FRouter, fBot, ADb);
 end;
 
 destructor TDemoPooling.Destroy;

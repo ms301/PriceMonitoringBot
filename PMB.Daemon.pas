@@ -7,7 +7,6 @@ uses
   mormot.rest.http.server,
   mormot.rest.sqlite3,
   mormot.orm.core,
-  mormot.db.raw.sqlite3.static,
   System.SysUtils,
   PMB.Tg.Pooling;
 
@@ -34,7 +33,9 @@ implementation
 
 uses
   PMB.orm.Model,
-  mormot.db.raw.sqlite3, mormot.core.os, mormot.core.base;
+  PMB.Log,
+  mormot.core.os,
+  mormot.core.base;
 
 {
   ******************************** TSampleDaemon *********************************
@@ -49,19 +50,21 @@ end;
 
 procedure TSampleDaemon.Start;
 begin
-  SQLite3Log.Enter(self);
-  FCore := TDemoPooling.Create;
+  Log.Enter(self);
+
   Model := CreateSampleModel;
   FClient := TRestClientDB.Create(Model, nil, ChangeFileExt(Executable.ProgramFileName, '.db'), TRestServerDB,
     false, '');
   FClient.server.server.CreateMissingTables;
+  FCore := TDemoPooling.Create(FClient);
   FCore.Main;
-  SQLite3Log.Add.Log(sllInfo, 'HttpServer started at Port: ' + HttpPort);
+  Log.Add.Log(sllInfo, 'HttpServer started at Port: ' + HttpPort);
+
 end;
 
 procedure TSampleDaemon.Stop;
 begin
-  SQLite3Log.Enter(self);
+  Log.Enter(self);
   FClient.Free;
   Model.Free;
   FCore.Free;
