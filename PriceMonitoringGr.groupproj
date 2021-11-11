@@ -6,12 +6,6 @@
         <Projects Include="Pooling.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\05-HttpDaemonORM\src\Project05HttpDaemon.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\01-StandAloneORM\src\Project01.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -29,32 +23,14 @@
     <Target Name="Pooling:Make">
         <MSBuild Projects="Pooling.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Project05HttpDaemon">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\05-HttpDaemonORM\src\Project05HttpDaemon.dproj"/>
-    </Target>
-    <Target Name="Project05HttpDaemon:Clean">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\05-HttpDaemonORM\src\Project05HttpDaemon.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Project05HttpDaemon:Make">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\05-HttpDaemonORM\src\Project05HttpDaemon.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Project01">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\01-StandAloneORM\src\Project01.dproj"/>
-    </Target>
-    <Target Name="Project01:Clean">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\01-StandAloneORM\src\Project01.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Project01:Make">
-        <MSBuild Projects="..\mORMot2\ex\ThirdPartyDemos\martin-doyle\01-StandAloneORM\src\Project01.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Pooling;Project05HttpDaemon;Project01"/>
+        <CallTarget Targets="Pooling"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Pooling:Clean;Project05HttpDaemon:Clean;Project01:Clean"/>
+        <CallTarget Targets="Pooling:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Pooling:Make;Project05HttpDaemon:Make;Project01:Make"/>
+        <CallTarget Targets="Pooling:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
