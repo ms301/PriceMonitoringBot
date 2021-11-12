@@ -4,3 +4,6 @@
 [submodule "mORMot2"]
 	path = mORMot2
 	url = https://github.com/synopse/mORMot2.git
+[submodule "AtbMarketApi"]
+	path = AtbMarketApi
+	url = https://github.com/ms301/AtbMarketApi.git
