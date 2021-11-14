@@ -7,3 +7,6 @@
 [submodule "AtbMarketApi"]
 	path = AtbMarketApi
 	url = https://github.com/ms301/AtbMarketApi.git
+[submodule "Silpo.ua"]
+	path = Silpo.ua
+	url = https://github.com/ms301/Silpo.ua.git
