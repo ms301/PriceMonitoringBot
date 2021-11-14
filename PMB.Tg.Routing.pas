@@ -21,10 +21,11 @@ type
     procedure SendReplyKeyboard(const UserLink: TtgUserLink; const MsgText: string;
       Kb: TtgReplyKeyboardMarkup); overload;
   protected
-
+    procedure RegisterMenu;
     function RouteStart: TtgRoute;
+    function RouteHelp: TtgRoute;
     function RouteGetGeo: TtgRoute;
-    function RouteMenuMain: TtgRoute;
+    function RouteBestPrice: TtgRoute;
   public
     procedure Build;
     constructor Create(ARouter: TtgRouter; ABot: TTelegramBotApi; ADb: TRestClientDB);
@@ -36,13 +37,15 @@ implementation
 uses
   PMB.Log,
   System.SysUtils,
-  TelegramBotApi.Types.Enums, TelegramBotApi.Types.Request, PMB.Orm.Model;
+  TelegramBotApi.Types.Enums,
+  TelegramBotApi.Types.Request,
+  PMB.Orm.Model;
 
 { TRouterBuilder }
 
 procedure TRouterBuilder.Build;
 begin
-  FRouter.RegisterRoutes([RouteStart, RouteGetGeo, RouteMenuMain]);
+  FRouter.RegisterRoutes([RouteStart, RouteHelp, RouteGetGeo, RouteBestPrice]);
 end;
 
 constructor TRouterBuilder.Create(ARouter: TtgRouter; ABot: TTelegramBotApi; ADb: TRestClientDB);
@@ -52,12 +55,37 @@ begin
   FBot := ABot;
   FDb := ADb;
   Build;
+  RegisterMenu;
 end;
 
 destructor TRouterBuilder.Destroy;
 begin
 
   inherited Destroy;
+end;
+
+procedure TRouterBuilder.RegisterMenu;
+var
+  LSetMyCommands: TtgSetMyCommandsArgument;
+  LResult: ItgResponse<Boolean>;
+begin
+  LSetMyCommands := TtgSetMyCommandsArgument.Create;
+  try
+    LSetMyCommands.Commands := [ //
+      TtgBotCommand.Create(RouteStart.Name.Substring(1), 'Start command'), //
+      TtgBotCommand.Create(RouteHelp.Name.Substring(1), 'Help command'), //
+      TtgBotCommand.Create(RouteGetGeo.Name.Substring(1), 'Указать местоположение'), //
+      TtgBotCommand.Create(RouteGetGeo.Name.Substring(1), 'Найти лучшую цену на товар')];
+    LSetMyCommands.Scope := TtgBotCommandScopeDefault.Create;
+    LResult := FBot.SetMyCommands(LSetMyCommands);
+  finally
+    LSetMyCommands.Free;
+  end;
+end;
+
+function TRouterBuilder.RouteBestPrice: TtgRoute;
+begin
+  Result := TtgRoute.Create('/best_price');
 end;
 
 function TRouterBuilder.RouteGetGeo: TtgRoute;
@@ -83,38 +111,16 @@ begin
         LOrmLocation.UserID := AMsg.From.ID;
         FDb.Add(LOrmLocation, True);
         SendTextMessage(AMsg.Chat.ID, 'Map saved');
-        FRouter.MoveTo(AMsg.From.ID, RouteMenuMain);
+        FRouter.MoveTo(AMsg.From.ID, RouteBestPrice);
       finally
         LOrmLocation.Free;
       end;
-
     end;
 end;
 
-function TRouterBuilder.RouteMenuMain: TtgRoute;
+function TRouterBuilder.RouteHelp: TtgRoute;
 begin
-  Result := TtgRoute.Create('/main_menu');
-  Result.OnStartCallback := procedure(AUserID: Int64)
-    var
-      lKB: TtgReplyKeyboardMarkup;
-      lBtnUpdateGEO: TtgKeyboardButton;
-    begin
-      lKB := TtgReplyKeyboardMarkup.Create;
-      lBtnUpdateGEO := TtgKeyboardButton.Create;
-      try
-        lBtnUpdateGEO.Text := 'Местоположение';
-        lKB.AddRow([lBtnUpdateGEO]);
-        SendReplyKeyboard(AUserID,
-          'Будь ласка, тепер оберіть кнопками, якого продукту стосується ваше запитання: ', lKB);
-      finally
-        // lKB.Free;     <-- Autofree in TelegaPi core
-      end;
-
-    end;
-  Result.OnMessageCallback := procedure(AMsg: TtgMessage)
-    begin
-
-    end;
+  Result := TtgRoute.Create('/help');
 end;
 
 function TRouterBuilder.RouteStart: TtgRoute;
@@ -122,11 +128,10 @@ begin
   Result := TtgRoute.Create('/start');
   Result.OnMessageCallback := procedure(AMsg: TtgMessage)
     const
-      MSG_WELCOME = 'Привет, %s, я помогу тебе следить за скидками. ' +
-        'Пришли мне свое местоположение, что бы я мог присылать тебе уведомления об актуальных акциях';
+      MSG_WELCOME = 'Привет, %s, я помогу тебе сравнить цены. ' +
+        'Пришли мне свое местоположение, что бы я мог сравнивать цены в твоем городе';
     var
       LMsgWelcome: string;
-      LUserName: string;
       lKB: TtgReplyKeyboardMarkup;
       lBtnUpdateGEO: TtgKeyboardButton;
     begin

@@ -8,12 +8,12 @@ uses
 type
   TtgRouteUserStateManagerRAM = class(TtgRouteUserStateManagerAbstract)
   private
-//    FRouteUserStates: TDictionary<Int64, string>;
+    // FRouteUserStates: TDictionary<Int64, string>;
   protected
     function DoGetUserState(const AUserID: Int64): string; override;
     procedure DoSetUserState(const AIndex: Int64; const Value: string); override;
   public
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 

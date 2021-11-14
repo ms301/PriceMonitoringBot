@@ -68,3 +68,5 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 *.log
+Win32/Debug/UaPriceComparerBot.db
+Win32/Debug/UaPriceComparerBot.token

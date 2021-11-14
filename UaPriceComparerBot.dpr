@@ -1,4 +1,4 @@
-﻿program Pooling;
+﻿program UaPriceComparerBot;
 
 {$APPTYPE CONSOLE}
 {$R *.res}
@@ -13,7 +13,9 @@ uses
   PMB.Tg.Pooling in 'PMB.Tg.Pooling.pas',
   PMB.Log in 'PMB.Log.pas',
   PMB.Tg.Routing in 'PMB.Tg.Routing.pas',
-  Unit1 in 'Unit1.pas';
+  Unit1 in 'Unit1.pas',
+  PMB.Integration.Intfc in 'PMB.Integration.Intfc.pas',
+  PMB.Integration.Manager in 'PMB.Integration.Manager.pas';
 
 var
   SampleDaemon: TSampleDaemon;

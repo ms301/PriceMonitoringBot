@@ -13,8 +13,6 @@ uses
 
 type
   TDemoPooling = class
-  const
-    BOT_TOKEN = '1225990942:AAEfSINTq5fMdAOiswxNScZ8wQUDD_5KDYQ';
   private
     fBot: TTelegramBotApi;
     fPooling: TtgPollingConsole;
@@ -23,7 +21,8 @@ type
     FRouterBuilder: TRouterBuilder;
   protected
     procedure UpdateConsoleTitle(ABot: TTelegramBotApi);
-
+    function ReadToken: string;
+    procedure SaveToken(const AToken: string);
     procedure DoReadMessage(AMsg: TtgMessage);
   public
     procedure Main;
@@ -36,16 +35,19 @@ implementation
 
 uses
   System.Rtti,
+  System.IOUtils,
   PMB.Log,
   TelegramBotApi.Types.Enums,
   TelegramBotApi.Types.Request,
   TelegramBotApi.Types.Keyboards,
-  Winapi.Windows, CloudAPI.Exceptions;
+  Winapi.Windows,
+  CloudAPI.Exceptions,
+  mormot.core.Log,
+  mormot.core.os;
 
 constructor TDemoPooling.Create(ADb: TRestClientDB);
 begin
-  fBot := TTelegramBotApi.Create(BOT_TOKEN);
-
+  fBot := TTelegramBotApi.Create(ReadToken);
   TcaExceptionManager.Current.OnAlert := procedure(AExcept: ECloudApiException)
     begin
       Log.Add.Log(TSynLogInfo.sllError, AExcept.ToString);
@@ -64,6 +66,7 @@ end;
 
 destructor TDemoPooling.Destroy;
 begin
+  SaveToken(fBot.BotToken);
   FRouterBuilder.Free;
   FRouteUsersState.Free;
   fBot.Free;
@@ -85,6 +88,23 @@ begin
       DoReadMessage(AMsg);
     end;
   fPooling.Start;
+end;
+
+function TDemoPooling.ReadToken: string;
+var
+  lFileToken: string;
+begin
+  lFileToken := ChangeFileExt(Executable.ProgramFileName, '.token');
+  if TFile.Exists(lFileToken) then
+    Result := TFile.ReadAllText(lFileToken);
+end;
+
+procedure TDemoPooling.SaveToken(const AToken: string);
+var
+  lFileToken: string;
+begin
+  lFileToken := ChangeFileExt(Executable.ProgramFileName, '.token');
+  TFile.WriteAllText(lFileToken, AToken);
 end;
 
 procedure TDemoPooling.UpdateConsoleTitle(ABot: TTelegramBotApi);
